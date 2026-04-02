@@ -1,4 +1,4 @@
-import Video from '../models/Video.js';
+import Video from '../../models/Video.js';
 import cloudinary from '../config/cloudinary.js';
 import { inngest } from '../jobs/videoProcessing.js';
 
