@@ -3,9 +3,9 @@ import Sidebar from './Sidebar';
 
 export default function Layout() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
-      <main className="ml-20 container mx-auto max-w-7xl px-8 py-10">
+      <main className="ml-20 lg:ml-20">
         <Outlet />
       </main>
     </div>

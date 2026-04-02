@@ -34,7 +34,9 @@ export default function VideoGrid() {
   if (error) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="text-red-500 text-lg">Error: {error}</div>
+        <div className="bg-white border border-slate-200/60 rounded-2xl shadow-sm p-8 text-center">
+          <div className="text-red-500 font-medium">{error}</div>
+        </div>
       </div>
     );
   }
@@ -42,8 +44,10 @@ export default function VideoGrid() {
   if (videos.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
-        <div className="text-slate-400 text-6xl mb-4">📹</div>
-        <div className="text-slate-600 text-lg">No videos found</div>
+        <div className="bg-white border border-slate-200/60 rounded-2xl shadow-sm p-12 text-center">
+          <div className="text-slate-400 text-6xl mb-4">📹</div>
+          <div className="text-slate-600 text-lg">No videos found</div>
+        </div>
       </div>
     );
   }
@@ -53,9 +57,9 @@ export default function VideoGrid() {
       {videos.map((video) => (
         <div
           key={video._id}
-          className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700"
+          className="group bg-white border border-slate-200/60 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden"
         >
-          <div className="aspect-video bg-slate-100 dark:bg-slate-900 relative overflow-hidden">
+          <div className="aspect-video bg-slate-100 relative overflow-hidden">
             <video
               src={video.url}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -65,17 +69,17 @@ export default function VideoGrid() {
           </div>
           <div className="p-5">
             <h3
-              className="font-semibold text-slate-900 dark:text-white truncate mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
+              className="font-bold tracking-tight text-slate-900 truncate mb-2 group-hover:text-indigo-600 transition-colors"
               title={video.title}
             >
               {video.title}
             </h3>
             {video.description && (
-              <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4" title={video.description}>
+              <p className="text-sm text-slate-600 line-clamp-2 mb-4" title={video.description}>
                 {video.description}
               </p>
             )}
-            <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+            <div className="flex items-center justify-between text-sm text-slate-500">
               <div className="flex items-center gap-1.5">
                 <Eye className="w-4 h-4" />
                 <span>{video.views.toLocaleString()} views</span>
