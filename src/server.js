@@ -37,6 +37,7 @@ const processVideo = inngest.createFunction(
 app.use(cors({
   origin: ['https://shelby-serves-frontend.vercel.app', 'http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Uploader-Address'],
   credentials: true
 }));
 app.use(express.json({ limit: '50mb' }));
