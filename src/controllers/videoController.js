@@ -28,6 +28,34 @@ export const getVideos = async (req, res) => {
   }
 };
 
+// 1.5. Get videos by uploader address
+export const getVideosByUploaderAddress = async (req, res) => {
+  try {
+    const { address } = req.params;
+    
+    const videos = await Video.find({ uploaderAddress: address }).sort({ createdAt: -1 });
+    
+    // Generate thumbnails for videos that don't have them
+    const videosWithThumbnails = videos.map(video => {
+      if (!video.thumbnailUrl && video.cloudinaryPublicId) {
+        const thumbnailUrl = cloudinary.url(video.cloudinaryPublicId, {
+          resource_type: 'video',
+          format: 'jpg',
+          transformation: [
+            { width: 400, height: 250, crop: 'fill' }
+          ]
+        });
+        return { ...video.toObject(), thumbnailUrl };
+      }
+      return video;
+    });
+    
+    res.json(videosWithThumbnails);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // 2. Get a single video by ID
 export const getVideoById = async (req, res) => {
   try {

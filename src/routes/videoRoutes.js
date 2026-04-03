@@ -3,6 +3,7 @@ import multer from 'multer';
 import { storage } from '../config/cloudinary.js';
 import {
   getVideos,
+  getVideosByUploaderAddress,
   getVideoById,
   getStreamUrl,
   incrementViews,
@@ -21,6 +22,7 @@ const upload = multer({
 });
 
 router.get('/', getVideos);
+router.get('/user/:address', getVideosByUploaderAddress);
 router.post('/upload', upload.single('video'), uploadVideo);
 router.get('/:id', getVideoById);
 router.get('/:id/stream', getStreamUrl);

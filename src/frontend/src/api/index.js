@@ -13,6 +13,7 @@ export default {
     }
   }),
   getVideos: () => api.get('/api/videos'),
+  getVideosByUploaderAddress: (address) => api.get(`/api/videos/user/${address}`),
   getVideo: (id) => api.get(`/api/videos/${id}`),
   getStreamUrl: (id) => api.get(`/api/stream/${id}`),
   incrementViews: (id) => api.post(`/api/videos/${id}/view`),
