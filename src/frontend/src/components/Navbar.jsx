@@ -1,30 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, Wallet, Gift, Menu, X } from 'lucide-react';
+import { Activity, Wallet, Gift, Menu, X, Lock } from 'lucide-react';
 import { useState } from 'react';
+import { useWallet } from '../contexts/WalletContext';
 
 export default function Navbar() {
   const location = useLocation();
-  const [isConnected, setIsConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState('');
-  const [isConnecting, setIsConnecting] = useState(false);
+  const { isConnected, walletAddress, isConnecting, handleConnect, handleDisconnect } = useWallet();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  const handleConnect = () => {
-    setIsConnecting(true);
-    
-    // Simulate 1-second wallet connection delay
-    setTimeout(() => {
-      const mockAddress = '0x123...abc';
-      setWalletAddress(mockAddress);
-      setIsConnected(true);
-      setIsConnecting(false);
-    }, 1000);
-  };
-  
-  const handleDisconnect = () => {
-    setWalletAddress('');
-    setIsConnected(false);
-  };
   
   return (
     <nav className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 shadow-lg">
@@ -46,7 +28,10 @@ export default function Navbar() {
               Dashboard
             </NavLink>
             <NavLink to="/upload" isActive={location.pathname === '/upload'}>
-              Upload
+              <span className="flex items-center gap-2">
+                Upload
+                {!isConnected && <Lock className="w-3 h-3 text-amber-500" />}
+              </span>
             </NavLink>
           </div>
           

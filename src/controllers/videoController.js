@@ -85,6 +85,7 @@ export const uploadVideo = async (req, res) => {
     console.log('Request file:', req.file);
     
     const { title } = req.body;
+    const uploaderAddress = req.headers['x-uploader-address'];
     
     if (!req.file) {
       console.error('No video file uploaded');
@@ -94,6 +95,11 @@ export const uploadVideo = async (req, res) => {
     if (!title) {
       console.error('Title is required');
       return res.status(400).json({ message: 'Title is required' });
+    }
+    
+    if (!uploaderAddress) {
+      console.error('Wallet address is required');
+      return res.status(403).json({ message: 'Wallet connection required. Please connect your Aptos wallet to upload videos.' });
     }
 
     console.log('Creating video document...');
@@ -113,6 +119,7 @@ export const uploadVideo = async (req, res) => {
       videoUrl: req.file.path, // Cloudinary URL
       cloudinaryPublicId: req.file.filename, // Cloudinary public ID
       thumbnailUrl: thumbnailUrl,
+      uploaderAddress: uploaderAddress,
       views: 0,
     });
 

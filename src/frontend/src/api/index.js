@@ -6,9 +6,10 @@ const api = axios.create({
 
 export default {
   // Video endpoints
-  uploadVideo: (formData) => api.post('/api/videos/upload', formData, {
+  uploadVideo: (formData, uploaderAddress) => api.post('/api/videos/upload', formData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
+      'Content-Type': 'multipart/form-data',
+      'X-Uploader-Address': uploaderAddress
     }
   }),
   getVideos: () => api.get('/api/videos'),

@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 import api from '../api';
-import { UploadCloud, FileVideo, CheckCircle, Hash, Loader2 } from 'lucide-react';
+import { useWallet } from '../contexts/WalletContext';
+import { UploadCloud, FileVideo, CheckCircle, Hash, Loader2, Lock, AlertCircle } from 'lucide-react';
 
 export default function UploadPage() {
+  const { isConnected, walletAddress } = useWallet();
   const [title, setTitle] = useState('');
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -43,7 +46,7 @@ export default function UploadPage() {
       formData.append('title', title);
       formData.append('video', file);
       
-      const response = await api.uploadVideo(formData);
+      const response = await api.uploadVideo(formData, walletAddress);
       console.log('Upload response:', response);
       
       // Generate mock Shelby Content ID
@@ -93,6 +96,29 @@ export default function UploadPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold tracking-tight text-white mb-8">Upload Video</h1>
+      
+      {/* Wallet Connection Required Alert */}
+      {!isConnected && (
+        <div className="mb-8 bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0">
+              <Lock className="w-8 h-8 text-amber-500" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-amber-400 mb-2">Action Required</h3>
+              <p className="text-slate-300 mb-4">Connect Aptos Wallet to access Shelby Storage sharding.</p>
+              <Link
+                to="/"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-900 font-medium rounded-xl transition-all shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30"
+              >
+                <AlertCircle className="w-4 h-4" />
+                Connect Wallet
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-2xl shadow-lg p-8 space-y-6">
         <div>
           <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Video Title</label>
@@ -100,7 +126,12 @@ export default function UploadPage() {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-white placeholder-slate-500"
+            disabled={!isConnected}
+            className={`w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all text-white placeholder-slate-500 ${
+              !isConnected
+                ? 'bg-slate-800/50 border border-slate-700/50 cursor-not-allowed opacity-50'
+                : 'bg-slate-800 border border-slate-700 focus:ring-indigo-500'
+            }`}
             placeholder="Enter video title..."
             required
           />
@@ -113,7 +144,12 @@ export default function UploadPage() {
               type="file"
               accept="video/*"
               onChange={(e) => setFile(e.target.files[0])}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-500/10 file:text-indigo-400 hover:file:bg-indigo-500/20 text-white"
+              disabled={!isConnected}
+              className={`w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium ${
+                !isConnected
+                  ? 'bg-slate-800/50 border border-slate-700/50 cursor-not-allowed opacity-50 file:bg-slate-700/50 file:text-slate-500'
+                  : 'bg-slate-800 border border-slate-700 focus:ring-indigo-500 file:bg-indigo-500/10 file:text-indigo-400 hover:file:bg-indigo-500/20 text-white'
+              }`}
               required
             />
             <FileVideo className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none" />
@@ -170,11 +206,13 @@ export default function UploadPage() {
         
         <button
           type="submit"
-          disabled={isUploading}
+          disabled={isUploading || !isConnected}
           className={`w-full py-3 px-4 rounded-xl text-white font-medium flex items-center justify-center gap-2 transition-all ${
-            isUploading
+            !isConnected
+              ? 'bg-slate-700 cursor-not-allowed opacity-50'
+              : isUploading
               ? 'bg-slate-700 cursor-not-allowed'
-              : 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg'
+              : 'bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50'
           }`}
         >
           {isUploading ? (
