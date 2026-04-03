@@ -35,10 +35,9 @@ const processVideo = inngest.createFunction(
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || "*",
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: ['https://shelby-serves-frontend.vercel.app', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
