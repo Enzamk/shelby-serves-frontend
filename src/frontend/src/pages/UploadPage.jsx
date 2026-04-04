@@ -26,6 +26,13 @@ export default function UploadPage() {
     e.preventDefault();
     if (!title || !file) return;
     
+    // File size validation (100MB limit)
+    const maxSize = 100 * 1024 * 1024; // 100MB
+    if (file.size > maxSize) {
+      toast.error(`File size exceeds 100MB limit. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`);
+      return;
+    }
+    
     setIsUploading(true);
     setUploadStage(0);
     setShelbyContentId(null);
@@ -42,10 +49,18 @@ export default function UploadPage() {
       // Stage 3: Broadcasting to Aptos Indexer
       setUploadStage(3);
       
+      // Health check ping to wake up Render instance (free tier spins down after inactivity)
+      try {
+        await api.getVideos(); // Simple GET request to wake up backend
+      } catch (healthError) {
+        console.log('Health check ping completed (backend may be waking up)');
+      }
+      
       const formData = new FormData();
       formData.append('title', title);
       formData.append('video', file);
       
+      // Add longer timeout for upload (Render free tier can take time to wake up)
       const response = await api.uploadVideo(formData, walletAddress);
       console.log('Upload response:', response);
       
@@ -79,7 +94,21 @@ export default function UploadPage() {
       console.error('Error response:', error.response);
       console.error('Error status:', error.response?.status);
       console.error('Error data:', error.response?.data);
-      const errorMessage = error.response?.data?.message || error.message || 'Upload failed. Please try again.';
+      
+      let errorMessage = 'Upload failed. Please try again.';
+      
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        errorMessage = 'Upload timeout. The backend is waking up (Render free tier). Please try again in 30 seconds.';
+      } else if (error.response?.status === 413) {
+        errorMessage = 'File too large. Maximum file size is 100MB.';
+      } else if (error.response?.status === 403) {
+        errorMessage = 'Wallet connection required. Please connect your wallet to upload videos.';
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast.error(errorMessage);
     } finally {
       setIsUploading(false);
